@@ -1,0 +1,5 @@
+The Applications of Circular Linked List are:
+
+Multiplayer Games use this to give each player chance.
+A circular linked list can be used to organize multiple running applications on an operating system. These applications are iterated over by the OS.
+It is also used to play music in a playlist. The song in a playlist again start from the begining when the playlist end.
