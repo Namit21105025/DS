@@ -1,0 +1,166 @@
+#include<iostream>
+#include<bits/stdc++.h>
+using namespace std;
+
+template <typename T>
+class BinaryTreeNode {
+	public : 
+	T data;
+	BinaryTreeNode<T> *left;
+	BinaryTreeNode<T> *right;
+	BinaryTreeNode(T data) {
+    	this -> data = data;
+    	left = NULL;
+    	right = NULL;
+	}
+};
+
+BinaryTreeNode<int>* helper(int *arr, int si, int ei) {
+    //base case
+    if(si>ei)
+        return NULL;
+    
+    //small calculation
+    int mid = (si + ei) / 2;
+    BinaryTreeNode<int>* root = new BinaryTreeNode<int>(arr[mid]);
+	
+    //recursive calls
+    if(mid != 0) {
+    	root->left = helper(arr,si,mid - 1);
+    }
+    root->right = helper(arr,mid + 1,ei);
+    return root;
+}
+
+BinaryTreeNode<int>* constructTree(int *input, int n) {
+	if(n == 0) {
+        return NULL;
+    }
+    return helper(input,0,n-1);
+}
+
+int minimum(BinaryTreeNode<int>* node) {
+    if(node == NULL) {
+        return INT_MAX;
+    }
+    int ans = node->data;
+    int smallAns = minimum(node->left);
+    if(ans > smallAns) {
+        ans = smallAns;
+        return ans;
+    } else {
+        return ans;
+    }
+}
+
+BinaryTreeNode<int>* deleteHelper(BinaryTreeNode<int>* node, int data) {
+    if(node == NULL) {
+        return NULL;
+    }
+    if(node->data == data) {
+        if(node->left == NULL && node->right == NULL) {
+            delete node;
+            return NULL;
+        } else if(node->left != NULL && node->right == NULL) {
+            BinaryTreeNode<int>* temp = node->left;
+            node->left = NULL;
+            delete node;
+            return temp;
+        } else if(node->right != NULL && node->left == NULL) {
+            BinaryTreeNode<int>* temp = node->right;
+            node->right = NULL;
+            delete node;
+            return temp;
+        } else if(node->left != NULL && node->right != NULL) {
+            int min = minimum(node->right);
+            node->data = min;
+            node->right = deleteHelper(node->right,min);
+        }
+    } else if(node->data < data) {
+        node->right = deleteHelper(node->right,data);
+    } else {
+        node->left = deleteHelper(node->left,data);
+    }
+    return node;
+}
+
+void deleteBST(BinaryTreeNode<int>* root, int data) {
+    root = deleteHelper(root,data);
+}
+
+int deleteArray(int* arr, int n, int data) {
+    for(int i = 0; i < n; i++) {
+        if(arr[i] == data) {
+            for(int j = i; j < n; j++) {
+                arr[j] = arr[j+1];
+            }
+            n = n-1;
+            break;
+        }
+    }
+    return n;
+}
+
+void print(BinaryTreeNode<int>* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    cout << root->data << " ";
+
+    print(root->left);
+    print(root->right);
+}
+
+void printArray(int *arr, int n) {
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+
+void DeleteElement(BinaryTreeNode<int>* root, int n, int *arr) {
+    int data;
+    cout << "Enter the element to delete : ";
+    cin >> data;
+
+    deleteBST(root,data);
+    n = deleteArray(arr,n,data);
+
+    cout << "Printing the updated BST after deletion : " << endl;
+    print(root);
+    cout << endl;
+    cout << "Printing the updated array after deletion : " << endl;
+    printArray(arr,n);
+}
+
+int main(){
+    int n;
+    cout << "Enter the size of array : ";
+    cin >> n;
+
+    cout << "Enter the elements in the array : " << endl;
+    int* arr = new int[n];
+    for(int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    sort(arr,arr+n);
+
+    // Construct BST
+    BinaryTreeNode<int>* root = constructTree(arr,n);
+
+    // Print the elements of BST in preOrder manner
+    cout << "Printing the BST in preOrder manner : " << endl;
+    print(root);
+    cout << endl;
+
+    // Delete the element
+    DeleteElement(root,n,arr);
+
+    delete [] arr;
+    return 0;
+}
+
+/*
+Both Binary Search Tree and array have Space Complexity of O(n)
+*/
